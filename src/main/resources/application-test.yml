@@ -1,0 +1,33 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /saas-boot/
+spring:
+  datasource:
+    hikari:
+      username: root
+      password: 123456
+      jdbc-url: jdbc:mysql://127.0.0.1:3306/manage?serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      connection-test-query: SELECT 1
+      idle-timeout: 30000
+      max-lifetime: 1880000
+      connection-timeout: 30000
+      minimum-idle: 5
+      validation-timeout: 60000
+
+  # mybatis-plus 配置
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  global-config:
+    banner: false
+    #mybatis-plus.global-config.worker-id=0
+    #mybatis-plus.global-config.datacenter-id=1
+    #mybatis-plus.global-config.db-config.id-type=id_worker_str
+    db-config:
+      capital-mode: false
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+  configuration:
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
