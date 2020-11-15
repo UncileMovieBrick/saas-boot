@@ -7,7 +7,7 @@ spring:
     hikari:
       username: root
       password: 123456
-      jdbc-url: jdbc:mysql://127.0.0.1:3306/manage?serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+      jdbc-url: jdbc:mysql://127.0.0.1:3306/saas-boot?serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
       driver-class-name: com.mysql.cj.jdbc.Driver
       connection-test-query: SELECT 1
       idle-timeout: 30000
