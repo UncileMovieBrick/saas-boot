@@ -35,9 +35,9 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
     @Override
     public Wrapper saveTenant(TenantBO tenantBO) {
         Tenant tenant = new Tenant();
+
         BeanUtils.copyProperties(tenantBO, tenant);
         tenant.setTenantId(UUIDUtils.getUUID());
-
         tenant.setStatusCd(StatusCdEnum.STATUS_CD_0.getType());
 
         boolean b = save(tenant);

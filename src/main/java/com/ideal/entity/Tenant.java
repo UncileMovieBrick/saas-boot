@@ -23,7 +23,7 @@ public class Tenant extends Model<Tenant> {
     /**
      * 租户ID
      */
-    @TableId(value = "tenant_id", type = IdType.AUTO)
+    @TableId(value = "tenant_id")
     private String tenantId;
 
     /**

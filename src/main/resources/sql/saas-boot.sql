@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50724
 File Encoding         : 65001
 
-Date: 2020-11-11 17:10:16
+Date: 2020-11-15 17:28:03
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -232,7 +232,7 @@ CREATE TABLE `t_static_resource` (
 DROP TABLE IF EXISTS `t_tenant`;
 CREATE TABLE `t_tenant` (
   `tenant_id` varchar(64) NOT NULL COMMENT '租户ID',
-  `tenant_name` varchar(64) NOT NULL COMMENT '租户名称',
+  `tenant_name` varchar(64) DEFAULT NULL COMMENT '租户名称',
   `system_account` varchar(64) DEFAULT NULL COMMENT '租户登录名',
   `system_password` varchar(64) DEFAULT NULL COMMENT '租户密码',
   `log_url` varchar(128) DEFAULT NULL COMMENT '租户Logo',
@@ -255,6 +255,8 @@ CREATE TABLE `t_tenant` (
 -- ----------------------------
 -- Records of t_tenant
 -- ----------------------------
+INSERT INTO `t_tenant` VALUES ('1', '租户管理系统', 'admin', '123456', null, '租户管理系统', 'jdbc:mysql://127.0.0.1:3306/manage?serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull', 'com.mysql.cj.jdbc.Driver', 'root', '123456', '15317171343', '2524906142@qq.com', '租户管理系统超级管理员，管理各个租户', '2020-11-12 11:14:05', 'system', null, null, '1');
+INSERT INTO `t_tenant` VALUES ('82918d41eab345b7b5bfa109cf2c2087', '测试公司1', 'ceshi1', '123456', 'logUrl', '测试公司1的应用', 'jdbc:mysql://127.0.0.1:3306/saas-boot?serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull', 'com.mysql.cj.jdbc.Driver', 'root', '123456', '14356789222', '252490614@qq.com', '测试公司1', null, '龚松', null, null, '0');
 
 -- ----------------------------
 -- Table structure for `t_user`
