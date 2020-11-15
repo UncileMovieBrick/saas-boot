@@ -29,9 +29,9 @@ import javax.servlet.http.HttpSession;
 public class DynamicDataSourceAspect {
 
     @Around("execution(* com.ideal.controller.*.*(..)) || execution(* com.ideal.*.*(..))")
-    public Object doAround(ProceedingJoinPoint jp) throws Throwable {
+    public Wrapper doAround(ProceedingJoinPoint jp) throws Throwable {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        Object result = null;
+        Wrapper result = null;
         try {
             HttpServletRequest request = sra.getRequest();
             HttpSession session = sra.getRequest().getSession(true);
@@ -39,21 +39,29 @@ public class DynamicDataSourceAspect {
             if (StringUtils.isEmpty(tenantId)) {
                 tenantId = request.getParameter("tenantId");
             }
-
             log.info("当前租户Id:{}", tenantId);
             if (!StringUtils.isEmpty(tenantId)) {
                 DynamicDataSourceContextHolder.setDataSourceKey(tenantId);
-                result = jp.proceed();
+                long startTime = System.currentTimeMillis();
+                result = (Wrapper)jp.proceed();
+                long endTime = System.currentTimeMillis();
+                long resultTime = endTime - startTime;
+                if (resultTime <= 1000) {
+                    log.info("服务：{}执行时间正常，执行时间为{}",jp.proceed().toString(),resultTime);
+                } else if (resultTime <= 2000) {
+                    log.warn("服务：{}执行时间过长警告，执行时间为{}",jp.proceed().toString(),resultTime);
+                } else {
+                    log.error("服务：{}执行时间严重超时，执行时间为{}",jp.proceed().toString(),resultTime);
+                }
             } else {
                 result = Wrapper.error("查询失败，当前租户信息未取到，请联系技术专家！");
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            log.error("系统异常，请联系技术专家！错误信息：{}",e.getMessage());
             result =  Wrapper.error("系统异常，请联系技术专家！");
         } finally {
             DynamicDataSourceContextHolder.clearDataSourceKey();
         }
         return result;
     }
-
 }
