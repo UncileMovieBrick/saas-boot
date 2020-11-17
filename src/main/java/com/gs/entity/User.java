@@ -23,7 +23,7 @@ public class User extends Model<User> {
     /**
      * 用户ID
      */
-    @TableId(value = "user_id", type = IdType.AUTO)
+    @TableId(value = "user_id")
     private String userId;
 
     /**

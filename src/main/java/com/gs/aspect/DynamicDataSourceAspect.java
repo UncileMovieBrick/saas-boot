@@ -47,11 +47,11 @@ public class DynamicDataSourceAspect {
                 long endTime = System.currentTimeMillis();
                 long resultTime = endTime - startTime;
                 if (resultTime <= 1000) {
-                    log.info("服务：{}执行时间正常，执行时间为{}",jp.proceed().toString(),resultTime);
+                    log.info("服务：{}执行时间正常，执行时间为{}",jp.toString(),resultTime);
                 } else if (resultTime <= 2000) {
-                    log.warn("服务：{}执行时间过长警告，执行时间为{}",jp.proceed().toString(),resultTime);
+                    log.warn("服务：{}执行时间过长警告，执行时间为{}",jp.toString(),resultTime);
                 } else {
-                    log.error("服务：{}执行时间严重超时，执行时间为{}",jp.proceed().toString(),resultTime);
+                    log.error("服务：{}执行时间严重超时，执行时间为{}",jp.toString(),resultTime);
                 }
             } else {
                 result = Wrapper.error("查询失败，当前租户信息未取到，请联系技术专家！");

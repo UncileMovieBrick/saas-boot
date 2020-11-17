@@ -26,7 +26,7 @@ import java.util.Map;
 
 /**
  * @author gongsong
- * @description: MyBatis-Plus 配置
+ * @description MyBatis-Plus 配置
  * @date 2020/11/10 9:55
  */
 @EnableTransactionManagement

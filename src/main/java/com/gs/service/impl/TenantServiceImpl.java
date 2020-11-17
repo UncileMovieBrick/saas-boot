@@ -8,8 +8,8 @@ import com.gs.mapper.TenantMapper;
 import com.gs.service.ITenantService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gs.service.TenantService;
+import com.gs.utils.SnowFlakeUtil;
 import com.gs.utils.SpringContextUtils;
-import com.gs.utils.UUIDUtils;
 import com.gs.utils.Wrapper;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         Tenant tenant = new Tenant();
 
         BeanUtils.copyProperties(tenantBO, tenant);
-        tenant.setTenantId(UUIDUtils.getUUID());
+        tenant.setTenantId(SnowFlakeUtil.getId());
         tenant.setStatusCd(StatusCdEnum.STATUS_CD_0.getType());
 
         boolean b = save(tenant);
