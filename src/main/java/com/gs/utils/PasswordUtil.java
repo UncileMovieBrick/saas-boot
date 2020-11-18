@@ -1,7 +1,6 @@
 package com.gs.utils;
 
 import org.apache.shiro.crypto.hash.SimpleHash;
-import org.apache.shiro.util.ByteSource;
 
 
 public class PasswordUtil {
@@ -15,11 +14,9 @@ public class PasswordUtil {
 	 * @param userPassword
 	 * @return
 	 */
-	public static String generatePassword(String userName,String userPassword) {
-		// 获取加密工具
-		ByteSource password = ByteSource.Util.bytes(userPassword);
+	public static String generatePassword(String salt,String userPassword) {
 		// 使用SimpleHash 加密
-		Object newPassword = new SimpleHash("md5", password, userName, 1024);
+		Object newPassword = new SimpleHash("md5", userPassword, salt, 1024);
 		return newPassword.toString();
 	}
 

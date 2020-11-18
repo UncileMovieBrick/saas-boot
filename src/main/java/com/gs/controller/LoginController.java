@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 
 @Slf4j
 @RestController
@@ -36,11 +38,9 @@ public class LoginController {
      * @return
      */
     @PostMapping("/login")
-    public Wrapper login(@RequestBody LoginBO loginBO) {
+    public Wrapper login(@RequestBody LoginBO loginBO, HttpServletResponse response) {
         String userName = loginBO.getUserName();
         String passWord = loginBO.getPassword();
-        // 生成token
-        String token = JwtUtil.sign(userName, passWord);
 
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_name",userName);
@@ -49,14 +49,17 @@ public class LoginController {
             return Wrapper.error("该用户不存在");
         }
 
-        String userPassword = PasswordUtil.generatePassword(userName,passWord);
+        String userPassword = PasswordUtil.generatePassword(user.getSalt(),passWord);
         // 判断用户密码和数据库中密码是否一致
         if (!user.getPassword().equals(userPassword)) {
             return Wrapper.error("用户名密码不匹配");
         }
+        // 生成token
+        String token = JwtUtil.sign(userName, userPassword);
         redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token,JwtUtil.EXPIRE_TIME / 1000);
-
-        return Wrapper.ok();
+        // 放在返回头里面
+        response.setHeader(CommonConstant.X_ACCESS_TOKEN,token);
+        return Wrapper.ok(token);
     }
 
     /**

@@ -42,6 +42,11 @@ public class User extends Model<User> {
     private String password;
 
     /**
+     * 加密盐
+     */
+    private String salt;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createTime;
@@ -97,6 +102,14 @@ public class User extends Model<User> {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public LocalDateTime getCreateTime() {

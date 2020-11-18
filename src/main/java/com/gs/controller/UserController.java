@@ -8,14 +8,9 @@ import com.gs.utils.PasswordUtil;
 import com.gs.utils.SnowFlakeUtil;
 import com.gs.utils.Wrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.crypto.hash.SimpleHash;
-import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author gongsong
@@ -37,7 +32,10 @@ public class UserController {
         user.setUserId(SnowFlakeUtil.getId());
         user.setStatusCd(StatusCdEnum.STATUS_CD_0.getType());
 
-        user.setPassword(PasswordUtil.generatePassword(userBO.getUserName(),userBO.getPassword()));
+        // 生成一个ID，用来做加密盐
+        String salt = SnowFlakeUtil.getId();
+        user.setSalt(salt);
+        user.setPassword(PasswordUtil.generatePassword(salt,userBO.getPassword()));
 
         iUserService.save(user);
         return Wrapper.ok();

@@ -10,7 +10,7 @@ public class CommonConstant {
     /**
      * Token 的 Key
      */
-    public static String ACCESS_TOKEN = "Access-Token";
+    public static String X_ACCESS_TOKEN = "X-Access-Token";
 
     /**
      * 缓存到 Redis 的常量

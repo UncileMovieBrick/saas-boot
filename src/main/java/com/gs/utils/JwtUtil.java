@@ -19,7 +19,7 @@ public class JwtUtil {
     /**
      * 过期时间30分钟
      */
-    public static final long EXPIRE_TIME = 30 * 60 * 1000;
+    public static final long EXPIRE_TIME = 1 * 60 * 1000;
 
     /**
      * 校验token是否正确
@@ -27,17 +27,16 @@ public class JwtUtil {
      * @param secret 用户的密码
      * @return 是否正确
      */
-    public static boolean verify(String token, String username, String secret) {
+    public static boolean verify(String token, String userName, String secret) {
         try {
             // 根据密码生成JWT效验器
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
+            JWTVerifier verifier = JWT.require(algorithm).withClaim("userName", userName).build();
             // 效验TOKEN
             DecodedJWT jwt = verifier.verify(token);
-            log.info(jwt+":-token is valid");
             return true;
         } catch (Exception e) {
-            log.info("The token is invalid{}",e.getMessage());
+            log.info("Token 验证失败，错误信息：{}",e.getMessage());
             return false;
         }
     }
@@ -49,7 +48,7 @@ public class JwtUtil {
     public static String getUserName(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("username").asString();
+            return jwt.getClaim("userName").asString();
         } catch (JWTDecodeException e) {
             log.error("error：{}", e.getMessage());
             return null;
@@ -58,19 +57,16 @@ public class JwtUtil {
 
     /**
      * 生成签名,5min(分钟)后过期
-     * @param username 用户名
+     * @param userName 用户名
      * @param secret   用户的密码
      * @return 加密的token
      */
-    public static String sign(String username, String secret) {
+    public static String sign(String userName, String secret) {
         Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            // 附带username信息
-            return JWT.create()
-                    .withClaim("username", username)
-                    .withExpiresAt(date)
-                    .sign(algorithm);
+            // 附带userName信息
+            return JWT.create().withClaim("userName", userName).withExpiresAt(date).sign(algorithm);
         } catch (Exception e) {
             log.error("生成签名失败：{}",e.getMessage());
             return "";
