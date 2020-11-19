@@ -8,6 +8,8 @@ import com.gs.utils.PasswordUtil;
 import com.gs.utils.SnowFlakeUtil;
 import com.gs.utils.Wrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,14 @@ public class UserController {
         user.setPassword(PasswordUtil.generatePassword(salt,userBO.getPassword()));
 
         iUserService.save(user);
+        return Wrapper.ok();
+    }
+
+    @RequiresRoles("sys_manager")
+    @RequiresPermissions("user:find")
+    @GetMapping("/test")
+    public Wrapper test() {
+
         return Wrapper.ok();
     }
 

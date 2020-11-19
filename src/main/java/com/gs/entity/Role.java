@@ -32,6 +32,11 @@ public class Role extends Model<Role> {
     private String tenantId;
 
     /**
+     * 角色Code
+     */
+    private String roleCode;
+
+    /**
      * 角色名称
      */
     private String roleName;
@@ -84,6 +89,14 @@ public class Role extends Model<Role> {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getRoleCode() {
+        return roleCode;
+    }
+
+    public void setRoleCode(String roleCode) {
+        this.roleCode = roleCode;
     }
 
     public LocalDateTime getCreateTime() {

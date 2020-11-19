@@ -2,4 +2,51 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gs.mapper.UserMapper">
 
+    <!--用户所拥有角色和权限-->
+    <resultMap id="UserRoleAndAuthResult" type="com.gs.entity.dto.UserDTO">
+        <id column="user_id" property="userId"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="user_name" property="userName"/>
+        <collection property="roleList" ofType="com.gs.entity.dto.RoleDTO">
+            <id column="role_id" property="roleId"/>
+            <result column="role_code" property="roleCode"/>
+            <result column="role_name" property="roleName"/>
+        </collection>
+        <collection property="authList" ofType="com.gs.entity.dto.AuthDTO">
+            <id column="auth_id" property="authId"/>
+            <result column="auth_code" property="authCode"/>
+            <result column="auth_name" property="authName"/>
+            <result column="auth_type" property="authType"/>
+            <result column="menu_id" property="menuId"/>
+            <result column="menu_name" property="menuName"/>
+            <result column="menu_url" property="menuUrl"/>
+            <result column="menu_level" property="menuLevel"/>
+            <result column="menu_router" property="menuRouter"/>
+            <result column="parent_menu_id" property="parentMenuId"/>
+            <result column="page_element_name" property="pageElementName"/>
+            <result column="static_resource_id" property="staticResourceId"/>
+            <result column="static_resource_name" property="staticResourceName"/>
+            <result column="static_resource_url" property="staticResourceUrl"/>
+        </collection>
+    </resultMap>
+
+    <!--通过用户名查询该用户所拥有的权限-->
+    <select id="queryUserRoleAndAuthByUserName" parameterType="string" resultMap="UserRoleAndAuthResult">
+        SELECT
+            tu.user_id,tu.tenant_id,tu.user_name,tr.role_id,tr.role_code,tr.role_name,
+            ta.auth_id,ta.auth_code,ta.auth_name,ta.auth_type,tm.menu_id,tm.menu_name,
+            tm.menu_url,tm.menu_level,tm.menu_router,tm.parent_menu_id,tpe.page_element_id,
+            tpe.page_element_name,tsr.static_resource_id,tsr.static_resource_name,
+            tsr.static_resource_url
+        FROM
+            t_user tu
+        LEFT JOIN r_user_role rur ON tu.user_id = rur.user_id AND rur.status_cd = 0
+        LEFT JOIN t_role tr ON rur.role_id = tr.role_id AND tr.status_cd = 0
+        LEFT JOIN r_role_auth rra ON tr.role_id = rra.role_id AND rra.status_cd = 0
+        LEFT JOIN t_auth ta ON ta.auth_id = rra.auth_id AND ta.status_cd = 0
+        LEFT JOIN t_menu tm ON ta.menu_id = tm.menu_id AND tm.status_cd = 0
+        LEFT JOIN t_page_element tpe ON ta.page_element_id = tpe.page_element_id AND tpe.status_cd = 0
+        LEFT JOIN t_static_resource tsr ON ta.static_resource_id = tsr.static_resource_id AND tsr.status_cd = 0
+        WHERE tu.user_name = #{userName} AND tu.tenant_id = #{tenantId} AND tu.status_cd = 0
+    </select>
 </mapper>

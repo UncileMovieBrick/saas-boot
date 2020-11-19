@@ -1,32 +1,47 @@
 package com.gs.shiro;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.gs.common.CommonConstant;
 import com.gs.entity.User;
+import com.gs.entity.dto.AuthDTO;
+import com.gs.entity.dto.RoleDTO;
+import com.gs.entity.dto.UserDTO;
 import com.gs.service.IUserService;
+import com.gs.service.UserService;
 import com.gs.utils.JwtUtil;
 import com.gs.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Component
 @Slf4j
 public class AuthRealm extends AuthorizingRealm {
 
+
+
     @Autowired
-    @Lazy
     private IUserService iUserService;
 
     @Autowired
-    @Lazy
+    private UserService userService;
+
+    @Autowired
     private RedisUtil redisUtil;
 
     /**
@@ -40,19 +55,48 @@ public class AuthRealm extends AuthorizingRealm {
     /**
      * 权限信息认证(包括角色以及权限)是用户访问controller的时候才进行验证(redis存储的此处权限信息)
      * 触发检测用户权限时才会调用此方法，例如checkRole,checkPermission
-     *
      * @param principals 身份信息
      * @return AuthorizationInfo 权限信息
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        return null;
+        log.info("==========Shiro 开始权限认证==========");
+
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+        if (ObjectUtils.isNotEmpty(principals)) {
+            User user = (User)principals.getPrimaryPrincipal();
+            String userName = user.getUserName();
+            String tenantId = user.getTenantId();
+
+            // 判断 Redis 中是否有用户的角色、权限信息
+            String userInfo = (String) redisUtil.get(CommonConstant.PREFIX_USER_ROLE_AUTH + user.getUserId());
+            UserDTO userDTO;
+            if (StringUtils.isNotEmpty(userInfo)) {
+                userDTO = JSONObject.parseObject(userInfo,UserDTO.class);
+            } else {
+                userDTO = userService.queryUserRoleAndAuthByUserName(userName,tenantId);
+                redisUtil.set(CommonConstant.PREFIX_USER_ROLE_AUTH + user.getUserId(), JSON.toJSONString(userDTO),CommonConstant.USER_ROLE_EXPIRE_TIME / 1000);
+            }
+            List<RoleDTO> roleDTOS = userDTO.getRoleList();
+            // 获取用户所有的角色
+            if (!CollectionUtils.isEmpty(roleDTOS)) {
+                Set<String> roleList = roleDTOS.stream().map(RoleDTO::getRoleCode).collect(Collectors.toSet());
+                info.setRoles(roleList);
+            }
+            // 获取用户所有的权限
+            List<AuthDTO> authDTOS = userDTO.getAuthList();
+            if (!CollectionUtils.isEmpty(authDTOS)) {
+                Set<String> authList = authDTOS.stream().map(AuthDTO::getAuthCode).collect(Collectors.toSet());
+                info.addStringPermissions(authList);
+            }
+        }
+        log.info("==========Shiro 权限认证成功==========");
+        return info;
     }
 
     /**
      * 用户信息认证是在用户进行登录的时候进行验证(不存redis)
      * 也就是说验证用户输入的账号和密码是否正确，错误抛出异常
-     *
      * @param auth 用户登录的账号密码信息
      * @return 返回封装了用户信息的 AuthenticationInfo 实例
      * @throws AuthenticationException

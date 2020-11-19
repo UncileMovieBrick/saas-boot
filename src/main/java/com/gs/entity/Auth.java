@@ -37,6 +37,11 @@ public class Auth extends Model<Auth> {
     private String parentId;
 
     /**
+     * 权限Code
+     */
+    private String authCode;
+
+    /**
      * 权限名称
      */
     private String authName;
@@ -45,6 +50,21 @@ public class Auth extends Model<Auth> {
      * 权限类型（0：静态资源，1：菜单，2：按钮/接口绑定权限）
      */
     private Integer authType;
+
+    /**
+     * 菜单ID
+     */
+    private String menuId;
+
+    /**
+     * 页面元素ID
+     */
+    private String pageElementId;
+
+    /**
+     * 静态资源ID
+     */
+    private String staticResourceId;
 
     /**
      * 创建时间
@@ -96,6 +116,14 @@ public class Auth extends Model<Auth> {
         this.parentId = parentId;
     }
 
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
+    }
+
     public String getAuthName() {
         return authName;
     }
@@ -110,6 +138,30 @@ public class Auth extends Model<Auth> {
 
     public void setAuthType(Integer authType) {
         this.authType = authType;
+    }
+
+    public String getMenuId() {
+        return menuId;
+    }
+
+    public void setMenuId(String menuId) {
+        this.menuId = menuId;
+    }
+
+    public String getPageElementId() {
+        return pageElementId;
+    }
+
+    public void setPageElementId(String pageElementId) {
+        this.pageElementId = pageElementId;
+    }
+
+    public String getStaticResourceId() {
+        return staticResourceId;
+    }
+
+    public void setStaticResourceId(String staticResourceId) {
+        this.staticResourceId = staticResourceId;
     }
 
     public LocalDateTime getCreateTime() {
